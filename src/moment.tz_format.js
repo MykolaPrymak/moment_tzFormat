@@ -42,7 +42,7 @@
 
   function getSetOffset (offset) {
     if ((offset instanceof Number) || !isNaN(parseInt(offset))) {
-      tz_offset === parseInt(offset);
+      tz_offset = parseInt(offset);
     }
     return tz_offset;
   }
