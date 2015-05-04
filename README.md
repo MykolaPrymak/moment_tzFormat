@@ -8,7 +8,10 @@ moment.tzFormat.offset(offset);
 ```
 Example:
 ```javascript
-moment.tzFormat.offset(120);
+// For GTM-3
+moment.tzFormat.offset(180);
+// For GTM+5 (EES)
+moment.tzFormat.offset(-300);
 ```
 This call sets the offset globaly.
 

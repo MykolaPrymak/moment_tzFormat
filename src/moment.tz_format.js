@@ -79,7 +79,7 @@
       var mom = this;
 
       if (tz_offset !== null) {
-        mom = this.clone().zone(tz_offset);
+        mom = this.clone().zone(-tz_offset);
       }
 
       return mom.format.apply(mom, args);
