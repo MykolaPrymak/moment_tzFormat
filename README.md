@@ -4,11 +4,11 @@
 ## Using
 Set the tz offset from UTC by call
 ```javascript
-moment.moment.tzFormat(offset);
+moment.tzFormat.offset(offset);
 ```
 Example:
 ```javascript
-moment.moment.tzFormat(120);
+moment.tzFormat.offset(120);
 ```
 This call sets the offset globaly.
 
