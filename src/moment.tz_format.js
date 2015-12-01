@@ -1,5 +1,5 @@
 //! moment.tz_format.js
-//! version : 0.0.1
+//! version : 1.0.0
 //! authors : Mykola Prymak
 //! license : MIT
 //! https://github.com/MykolaPrymak/moment_tzFormat
@@ -22,7 +22,7 @@
   // Do not load moment-timezone a second time.
   if (moment.tz_format !== undefined) { return moment; }
 
-  var VERSION = "0.0.1",
+  var VERSION = "1.0.0",
 
     momentVersion = moment.version.split('.'),
     major = +momentVersion[0],
@@ -39,12 +39,37 @@
   ************************************/
 
   var tz_offset = null;
+  var tz_transitions = [];
 
-  function getSetOffset (offset) {
+  function configure (offset, tzTransitions) {
     if ((offset instanceof Number) || !isNaN(parseInt(offset))) {
       tz_offset = parseInt(offset);
     }
+    if ((tzTransitions instanceof Array) || (tzTransitions.length > 0)) {
+      tz_transitions = [].concat(tzTransitions);
+
+      for (var i = 0; i < tz_transitions.length; i++) {
+        tz_transitions[i].time = moment(tz_transitions[i].time);
+      }
+    }
     return tz_offset;
+  }
+
+  function getTzOffset(mom) {
+    var offset = tz_offset;
+    var startTransition, endTransition;
+
+    for (var i = 0; i < tz_transitions.length - 1; i++) {
+      startTransition = tz_transitions[i];
+      endTransition = tz_transitions[i + 1];
+
+      if (mom.isAfter(startTransition.time) && mom.isBefore(endTransition.time)) {
+        offset = startTransition.offset;
+        break;
+      }
+    }
+
+    return offset;
   }
 
   function logError (message) {
@@ -61,8 +86,12 @@
     return input;
   }
 
+  function tz_apply (input) {
+    return input;
+  }
+
   tz_format.version      = VERSION;
-  tz_format.offset       = getSetOffset;
+  tz_format.configure    = configure;
 
   /************************************
     Interface with Moment.js
@@ -71,21 +100,39 @@
   var fn = moment.fn;
 
   moment.tzFormat = tz_format;
+  moment.tzApply = tz_apply;
+
 
 
   fn.tzFormat = function (str) {
     if (str) {
       var args = Array.prototype.slice.call(arguments);
       var mom = this;
+      var offset = getTzOffset(mom);
 
-      if (tz_offset !== null) {
-        mom = this.clone().zone(-tz_offset);
+      if (offset !== null) {
+        mom = this.clone().zone(-offset);
       }
 
       return mom.format.apply(mom, args);
     }
 
     return this;
+  };
+
+  fn.tzApply = function () {
+      var mom = this;
+      var offset = getTzOffset(mom);
+
+      if (offset !== null) {
+        mom = this.clone().zone(-offset);
+      }
+
+      return mom;
+  };
+
+  fn.getTzOffset = function () {
+      return getTzOffset(this);
   };
 
   // Return injected version
