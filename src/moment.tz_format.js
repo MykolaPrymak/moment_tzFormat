@@ -1,5 +1,5 @@
 //! moment.tz_format.js
-//! version : 1.0.0
+//! version : 1.0.1
 //! authors : Mykola Prymak
 //! license : MIT
 //! https://github.com/MykolaPrymak/moment_tzFormat
@@ -22,7 +22,7 @@
   // Do not load moment-timezone a second time.
   if (moment.tz_format !== undefined) { return moment; }
 
-  var VERSION = "1.0.0",
+  var VERSION = "1.0.1",
 
     momentVersion = moment.version.split('.'),
     major = +momentVersion[0],
@@ -63,7 +63,7 @@
       startTransition = tz_transitions[i];
       endTransition = tz_transitions[i + 1];
 
-      if (mom.isAfter(startTransition.time) && mom.isBefore(endTransition.time)) {
+      if (mom.isSame(startTransition.time) || (mom.isAfter(startTransition.time) && mom.isBefore(endTransition.time))) {
         offset = startTransition.offset;
         break;
       }
